@@ -1,0 +1,14 @@
+1. Добавить django
+2. Добавить app employee
+    2.1 Функционал:
+        1. CRUD для employee. Поля - id, username, first name, lastname, email, phonenumber, chat_id, status, curator
+        2. status - отдельная таблица, связана по fk c employee
+        4. curator - self fk
+        5. DRF API GET/POST/PUT/DELETE по id, GET LIST. GET по username, phonenumber, chat_id
+        6. Миграции, запускайте в db.sqlite
+        7. При миграции, автоматическое создание superuser admin/admin123456
+        8. все что сделали должно быть в админке
+3. Добавить app faq
+    3.1 Функционал:
+        1. CRUD для faq. Поля - id, question, answer
+        2. DRF API GET/POST/PUT/DELETE по id, GET LIST
