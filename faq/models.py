@@ -1,3 +1,7 @@
 from django.db import models
 
-# Create your models here.
+
+class FaqTable(models.Model):
+    faq_id = models.AutoField(primary_key=True)
+    question = models.TextField()
+    answer = models.TextField()
