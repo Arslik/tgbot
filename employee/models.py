@@ -11,12 +11,12 @@ class Employees(models.Model):
     status_name = models.CharField(max_length=20)
     curator = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True)
 
+
     def __str__(self):
         return f"{self.employee_id}--{self.username}"
 
     class Meta:
         db_table = "employee_employees"
-
 
 class Status(models.Model):
     status_id = models.AutoField(primary_key=True)
