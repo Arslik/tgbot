@@ -9,7 +9,7 @@ class Employees(models.Model):
     phone_number = models.IntegerField()
     chat_id = models.IntegerField()
     status_name = models.CharField(max_length=20)
-    curator = models.ForeignKey('self', on_delete=models.CASCADE, null=True, blank=True)
+    curator = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True)
 
 
 class Status(models.Model):
