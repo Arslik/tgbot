@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'employee.apps.EmployeeConfig',
     'faq.apps.FaqConfig',
+    'rest_framework'
 ]
 
 MIDDLEWARE = [
