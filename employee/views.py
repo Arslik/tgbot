@@ -27,18 +27,18 @@ class EmployeeByQueryAPIView(generics.RetrieveAPIView):
 
     def get_object(self):
         query_type = self.request.GET.get('type', None)
-        value = self.request.GET.get('value', None)
-        if not query_type or not value:
+        query_value = self.request.GET.get('value', None)
+        if not query_type or not query_value:
             return None
         try:
             if query_type == 'email':
-                return Employees.objects.get(email=value)
+                return Employees.objects.get(email=query_value)
             elif query_type == 'phone':
-                return Employees.objects.get(phone_number=value)
+                return Employees.objects.get(phone_number=query_value)
             elif query_type == 'id':
-                return Employees.objects.get(employee_id=value)
+                return Employees.objects.get(employee_id=query_value)
             elif query_type == 'username':
-                return Employees.objects.get(username=value)
+                return Employees.objects.get(username=query_value)
         except Employees.DoesNotExist:
             pass
         return None
