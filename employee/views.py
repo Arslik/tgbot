@@ -2,8 +2,8 @@ from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status, generics
-from .models import Employees
-from .serializer import EmployeeSerializer
+from .models import Employees, Status
+from .serializer import EmployeeSerializer, StatusSerializer
 
 
 class EmployeeDetail(APIView):
@@ -107,3 +107,17 @@ class EmployeePhoneSearch(generics.RetrieveAPIView):
             return Employees.objects.get(phone_number=phone_number)
         except Employees.DoesNotExist:
             return None
+
+
+class StatusDetail(APIView):
+    def get(self, request):
+        obj = Status.objects.all()
+        serializer = StatusSerializer(obj, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        serializer = StatusSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)

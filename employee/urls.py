@@ -1,5 +1,6 @@
 from django.urls import path
-from .views import EmployeeDetail, EmployeeInfo, EmployeeUsernameSearch, EmployeeEmailSearch, EmployeePhoneSearch
+from .views import EmployeeDetail, EmployeeInfo, EmployeeUsernameSearch, \
+    EmployeeEmailSearch, EmployeePhoneSearch, StatusDetail
 
 urlpatterns = [
 
@@ -8,5 +9,4 @@ urlpatterns = [
     path("emp/<str:username>", EmployeeUsernameSearch.as_view()),
     path("email", EmployeeEmailSearch.as_view(), name="email"),
     path("phone", EmployeePhoneSearch.as_view(), name="phone"),
-
 ]
