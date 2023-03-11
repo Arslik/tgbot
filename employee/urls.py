@@ -1,12 +1,12 @@
 from django.urls import path
-from .views import EmployeeDetail, EmployeeInfo, EmployeeUsernameSearch, EmployeeEmailSearch, EmployeePhoneSearch
+from .views import EmployeeDetail, EmployeeByQueryAPIView
+
+# EmployeeUsernameSearch, EmployeeEmailSearch, EmployeePhoneSearch
 
 urlpatterns = [
 
-    path("emp/", EmployeeDetail.as_view(), name="emp"),
-    path("emp/<int:employee_id>", EmployeeInfo.as_view()),
-    path("emp/<str:username>", EmployeeUsernameSearch.as_view()),
-    path("email", EmployeeEmailSearch.as_view(), name="email"),
-    path("phone", EmployeePhoneSearch.as_view(), name="phone"),
+    path("detail/", EmployeeDetail.as_view(), name="detail"),
+    path('', EmployeeByQueryAPIView.as_view()),
+    # 127.0.0.1:8000/employee/?type=username&value=mashkanov
 
 ]

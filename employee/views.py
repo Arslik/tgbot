@@ -4,6 +4,7 @@ from rest_framework.views import APIView
 from rest_framework import status, generics
 from .models import Employees
 from .serializer import EmployeeSerializer
+from django.contrib.auth.models import User
 
 
 class EmployeeDetail(APIView):
@@ -20,90 +21,51 @@ class EmployeeDetail(APIView):
         return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
 
 
-class EmployeeInfo(APIView):
-    def get(self, request, employee_id):
-        try:
-            obj = Employees.objects.get(employee_id=employee_id)
-
-        except Employees.DoesNotExist:
-            msg = {"msg": "not found"}
-            return Response(msg, status=status.HTTP_404_NOT_FOUND)
-
-        serializer = EmployeeSerializer(obj)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-    def put(self, request, employee_id):
-        try:
-            obj = Employees.objects.get(employee_id=employee_id)
-
-        except Employees.DoesNotExist:
-            msg = {"msg": "not found"}
-
-            return Response(msg, status=status.HTTP_404_NOT_FOUND)
-
-        serializer = EmployeeSerializer(obj, data=request.data)
-
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_205_RESET_CONTENT)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def patch(self, request, employee_id):
-        try:
-            obj = Employees.objects.get(employee_id=employee_id)
-
-        except Employees.DoesNotExist:
-            msg = {"msg": "not found"}
-
-            return Response(msg, status=status.HTTP_404_NOT_FOUND)
-
-        serializer = EmployeeSerializer(obj, data=request.data, partial=True)
-
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_205_RESET_CONTENT)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self, request, employee_id):
-        try:
-            obj = Employees.objects.get(employee_id=employee_id)
-
-        except Employees.DoesNotExist:
-            msg = {"msg": "not found"}
-            return Response(msg, status=status.HTTP_404_NOT_FOUND)
-
-        obj.delete()
-        return Response({"msg": "deleted"}, status=status.HTTP_204_NO_CONTENT)
-
-
-class EmployeeUsernameSearch(generics.ListAPIView):
-    queryset = Employees.objects.all()
-    serializer_class = EmployeeSerializer
-
-    def get_queryset(self):
-        username = self.kwargs['username']
-        return Employees.objects.filter(username__icontains=username)
-
-
-class EmployeeEmailSearch(generics.RetrieveAPIView):
+class EmployeeByQueryAPIView(generics.RetrieveAPIView):
     serializer_class = EmployeeSerializer
     queryset = Employees.objects.all()
 
     def get_object(self):
-        email = self.request.data['email']
-        try:
-            return Employees.objects.get(email=email)
-        except Employees.DoesNotExist:
+        query_type = self.request.GET.get('type', None)
+        value = self.request.GET.get('value', None)
+        if not query_type or not value:
             return None
-
-
-class EmployeePhoneSearch(generics.RetrieveAPIView):
-    serializer_class = EmployeeSerializer
-    queryset = Employees.objects.all()
-
-    def get_object(self):
-        phone_number = self.request.data['phone_number']
         try:
-            return Employees.objects.get(phone_number=phone_number)
+            if query_type == 'email':
+                return Employees.objects.get(email=value)
+            elif query_type == 'phone':
+                return Employees.objects.get(phone_number=value)
+            elif query_type == 'id':
+                return Employees.objects.get(employee_id=value)
+            elif query_type == 'username':
+                return Employees.objects.get(username=value)
         except Employees.DoesNotExist:
-            return None
+            pass
+        return None
+
+    def delete(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if instance is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        instance.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+    def put(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if instance is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = self.get_serializer(instance, data=request.data, partial=False)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+
+    def patch(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if instance is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
+
+

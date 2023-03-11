@@ -5,14 +5,6 @@ import django.db.models.deletion
 from django.contrib.auth import get_user_model
 
 
-def create_superuser(apps, schema_editor):
-    User = get_user_model()
-    User.objects.create_superuser(
-        username='admin1',
-        email='admin@example.com',
-        password='admin123456'
-    )
-
 
 class Migration(migrations.Migration):
 
@@ -50,5 +42,5 @@ class Migration(migrations.Migration):
             name='employees',
             table='employee_employees',
         ),
-        migrations.RunPython(create_superuser),
+        # migrations.RunPython(create_superuser),
     ]
