@@ -12,3 +12,15 @@
     3.1 Функционал:
         1. CRUD для faq. Поля - id, question, answer
         2. DRF API GET/POST/PUT/DELETE по id, GET LIST
+
+
+4. Исправить employee model -= добавить fk к status
+5. Исправить url
+6. Переписать view как динамическую (опиционально)
+7. Переписать view для CRUD по username, email, phone
+
+
+8. Создание телеграм бота
+    8.1 Прочитать документацию python telegram bot - https://python-telegram-bot.org/
+    8.2 Создайте тестовый телеграм бота по examples - https://docs.python-telegram-bot.org/en/stable/
+    8.3 К 13.03.2023г. сделать 2 бота. 
