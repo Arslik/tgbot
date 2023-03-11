@@ -8,7 +8,12 @@ class Employees(models.Model):
     email = models.CharField(max_length=30, unique=True)
     phone_number = models.CharField(max_length=20, unique=True)
     chat_id = models.IntegerField(unique=True)
-    status_name = models.CharField(max_length=20)
+    statuses = (
+        ('1', u'Granted'),
+        ('2', u'Pending'),
+        ('3', u'Blocked'),
+    )
+    status_name = models.CharField(max_length=20, choices=statuses, blank=True)
     curator = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True)
 
     def __str__(self):
@@ -22,3 +27,6 @@ class Status(models.Model):
     status_id = models.AutoField(primary_key=True)
     employee_id = models.ForeignKey(Employees, on_delete=models.CASCADE)
     status_name = models.CharField(max_length=20)
+
+    class Meta:
+        db_table = "employee_status"
