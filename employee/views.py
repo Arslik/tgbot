@@ -2,8 +2,8 @@ from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework import status, generics
-from .models import Employees
-from .serializer import EmployeeSerializer
+from .models import Employees, Status
+from .serializer import EmployeeSerializer, StatusSerializer
 from django.contrib.auth.models import User
 
 
@@ -67,5 +67,19 @@ class EmployeeByQueryAPIView(generics.RetrieveAPIView):
         serializer.is_valid(raise_exception=True)
         serializer.save()
         return Response(serializer.data)
+
+
+class StatusDetail(APIView):
+    def get(self, request):
+        obj = Status.objects.all()
+        serializer = StatusSerializer(obj, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def post(self, request):
+        serializer = StatusSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
 
 
