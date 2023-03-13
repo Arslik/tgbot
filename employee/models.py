@@ -14,10 +14,10 @@ class Status(models.Model):
 
 class Employees(models.Model):
     employee_id = models.AutoField(primary_key=True)
-    username = models.CharField(max_length=20, unique=True)
-    firstname = models.CharField(max_length=20)
-    email = models.CharField(max_length=30, unique=True)
-    phone_number = models.CharField(max_length=20, unique=True)
+    username = models.CharField(max_length=20, unique=True, blank=False)
+    firstname = models.CharField(max_length=20, blank=False)
+    email = models.CharField(max_length=30, unique=True, blank=False)
+    phone_number = models.CharField(max_length=20, unique=True, blank=False)
     chat_id = models.IntegerField(unique=True)
     status_name = models.ForeignKey(Status, on_delete=models.SET_NULL, null=True, blank=True)
     curator = models.ForeignKey('self', on_delete=models.SET_NULL, null=True, blank=True)
