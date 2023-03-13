@@ -33,6 +33,8 @@ class EmployeeByQueryAPIView(generics.RetrieveAPIView):
         try:
             if query_type == 'email':
                 return Employees.objects.get(email=query_value)
+            elif query_type == 'chat_id':
+                return Employees.objects.get(chat_id=query_value)
             elif query_type == 'phone':
                 return Employees.objects.get(phone_number=query_value)
             elif query_type == 'id':
