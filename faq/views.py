@@ -1,10 +1,11 @@
 from django.shortcuts import render
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework import status
+from rest_framework import status, generics
 from .models import FaqTable
 from .serializers import FaqSerializer
 from django.shortcuts import get_list_or_404
+from django.contrib.auth.models import User
 
 
 class FaqDetails(APIView):
@@ -21,69 +22,46 @@ class FaqDetails(APIView):
         return Response(serializer.data, status=status.HTTP_400_BAD_REQUEST)
 
 
-class FaqInfo(APIView):
-    def get(self, request, faq_id):
+class FAQByQueryAPIView(generics.RetrieveAPIView):
+    serializer_class = FaqSerializer
+    queryset = FaqTable.objects.all()
+
+    def get_object(self):
+        query_type = self.request.GET.get('type', None)
+        query_value = self.request.GET.get('value', None)
+        if not query_type or not query_value:
+            return None
         try:
-            obj = FaqTable.objects.get(faq_id = faq_id)
-
+            if query_type == 'id':
+                return FaqTable.objects.get(faq_id=query_value)
         except FaqTable.DoesNotExist:
-            msg = {"msg": "not found"}
-            return Response(msg, status=status.HTTP_404_NOT_FOUND)
+            pass
+        return None
 
-        serializer = FaqSerializer(obj)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+    def delete(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if instance is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        instance.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
-    def get(self, request, question):
-        try:
-            obj = get_list_or_404(FaqTable, question=question)
+    def put(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if instance is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = self.get_serializer(instance, data=request.data, partial=False)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
 
-        except FaqTable.DoesNotExist:
-            msg = {"msg": "not found"}
-            return Response(msg, status=status.HTTP_404_NOT_FOUND)
+    def patch(self, request, *args, **kwargs):
+        instance = self.get_object()
+        if instance is None:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
 
-        serializer = FaqSerializer(obj)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-    def put(self, request, faq_id):
-        try:
-            obj = FaqTable.objects.get(faq_id = faq_id)
-
-        except FaqTable.DoesNotExist:
-            msg = {"msg" : "not found"}
-
-            return Response(msg, status=status.HTTP_404_NOT_FOUND)
-
-        serializer = FaqSerializer(obj, data=request.data)
-
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_205_RESET_CONTENT)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def patch(self, request, faq_id):
-        try:
-            obj = FaqTable.objects.get(faq_id=faq_id)
-
-        except FaqTable.DoesNotExist:
-            msg = {"msg": "not found"}
-
-            return Response(msg, status=status.HTTP_404_NOT_FOUND)
-
-        serializer = FaqSerializer(obj, data=request.data, partial=True)
-
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_205_RESET_CONTENT)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self, request, faq_id):
-        try:
-            obj = FaqTable.objects.get(faq_id = faq_id)
-
-        except FaqTable.DoesNotExist:
-            msg = {"msg" : "not found"}
-            return Response(msg, status= status.HTTP_404_NOT_FOUND)
-        obj.delete()
-        return Response({"msg":"deleted"}, status=status.HTTP_204_NO_CONTENT)
 
 

@@ -14,7 +14,7 @@ logging.basicConfig(
 conn = sqlite3.connect('../db.sqlite3')
 
 if __name__ == '__main__':
-    application = ApplicationBuilder().token('6131018390:AAH-rxg7k23Gd1dbVChPnysn-Asx333fcZU').build()
+    application = ApplicationBuilder().token('6201725037:AAFMh2_lg8slH7eiBVvLyK2NdkWKTLJryXg').build()
 
     start_handler = CommandHandler('start', handle_messages)
     application.add_handler(start_handler)

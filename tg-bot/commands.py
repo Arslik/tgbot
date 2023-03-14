@@ -3,17 +3,7 @@ import telegram
 from main import *
 import requests
 import json
-
-
-# def is_chat_id_in_db(request):
-#     telegram_chat_id = update.message.chat_id
-#     c = conn.cursor()
-#     c.execute("SELECT * FROM employee_employees WHERE chat_id=?", (chat_id,))
-#     result = c.fetchone()
-#     if result:
-#         return True
-#     else:
-#         return False
+from telegram import ReplyKeyboardMarkup, KeyboardButton
 
 
 def is_phone_number_in_db(phone_number):
@@ -34,23 +24,40 @@ async def handle_messages(update, context):
     database_chat_id = response.json()['chat_id']
 
     if chat_id == database_chat_id:
-        await context.bot.send_message(chat_id=chat_id, text="Добро пожаловать!")
+        menu_buttons = [
+            [KeyboardButton("Инфо")],
+            [KeyboardButton("Клубы")],
+            [KeyboardButton("FAQ")],
+            [KeyboardButton("Новости")],
+            [KeyboardButton("Программа лояльности")],
+        ]
+        menu_keyboard = ReplyKeyboardMarkup(menu_buttons, resize_keyboard=True)
+        menu_text = "Добро пожаловать!"
+        await context.bot.send_message(chat_id=chat_id, text=menu_text, reply_markup=menu_keyboard)
+
     else:
-        keyboard = {
-            'keyboard': [[{'text': 'Share your phone number', 'request_contact': True}]],
-            'resize_keyboard': True,
-        }
-        keyboard_json = json.dumps(keyboard)
-        message = 'Please click one of the buttons below:'
-        send_message_url = f'https://api.telegram.org/bot6131018390:AAH-rxg7k23Gd1dbVChPnysn-Asx333fcZU/sendMessage' \
-                           f'?chat_id={chat_id}&text={message}&reply_markup={keyboard_json} '
-        requests.get(send_message_url)
+        url = 'http://127.0.0.1:8000/faq/faq'
+        response = requests.get(url)
+        faq_list = response.json()
 
+        buttons = []
+        for faq in faq_list:
+            buttons.append([InlineKeyboardButton(faq['question'], callback_data=faq['id'])])
 
-# async def handle_phone(update, context):
-#     phone_number = update.message.phone_number
-#     if is_phone_number_in_db(phone_number):
-#         await context.bot.send_message(chat_id=chat_id, text="Вы зарегистрированы!")
-#     else:
-#         await context.bot.send_message(chat_id=chat_id, text="Нет доступа!")
-
+        faq_keyboard = InlineKeyboardMarkup(buttons)
+        faq_text = 'Выберите вопрос:'
+        await context.bot.send_message(chat_id=chat_id, text=faq_text, reply_markup=faq_keyboard)
+        # button_id = int(update.callback_query.data)
+        #
+        # # Get the answer text corresponding to the ID
+        # rows = context.user_data.get('rows', [])
+        # for row in rows:
+        #     if row['faq_id'] == button_id:
+        #         answer_text = row['answer']
+        #         break
+        # else:
+        #     answer_text = 'Answer not found.'
+        #
+        # # Send the answer to the user
+        # update.callback_query.answer(answer_text)
+        #

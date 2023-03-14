@@ -1,10 +1,9 @@
 from django.urls import path
-from .views import FaqDetails, FaqInfo
+from .views import FaqDetails, FAQByQueryAPIView
 
 urlpatterns = [
 
     path("faq/", FaqDetails.as_view(), name="faq"),
-    path("faq/<int:faq_id>", FaqInfo.as_view()),
-    path("faq/<str:question>", FaqInfo.as_view())
+    path('', FAQByQueryAPIView.as_view()),
 
 ]
