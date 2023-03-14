@@ -1,7 +1,6 @@
 from django.urls import path
 from .views import EmployeeDetail, EmployeeByQueryAPIView
 
-# EmployeeUsernameSearch, EmployeeEmailSearch, EmployeePhoneSearch
 
 urlpatterns = [
 
