@@ -8,9 +8,16 @@ from telegram import KeyboardButton, InlineKeyboardMarkup
 from telegram.ext import CallbackContext
 
 
+async def show_wait_message(chat_id, context):
+    message = "Please wait some time, the operation is executing at the moment"
+    await context.bot.send_message(chat_id=chat_id, text=message)
+
+
 async def handle_messages(update:Update, context: CallbackContext):
     chat_id = update.message.chat_id
     url = f'http://127.0.0.1:8000/employee/?type=chat_id&value={chat_id}'
+
+    await show_wait_message(chat_id, context)
 
     response = requests.get(url)
     database_chat_id = response.json()['chat_id']
@@ -39,9 +46,11 @@ async def handle_messages(update:Update, context: CallbackContext):
         requests.get(send_message_url)
 
 
-async def handle_phone_number(update: Update, context: CallbackContext)-> None:
-    query = update.callback_query
-    phone_number = query.message.contact.phone_number
+async def handle_phone_number(update: Update, context: CallbackContext):
+    chat_id = update.effective_chat.id
+    phone_number = update.message.contact.phone_number
+
+    await show_wait_message(chat_id, context)
 
     url = f'http://127.0.0.1:8000/employee/?type=phone&value={phone_number}'
     response = requests.get(url)
