@@ -1,4 +1,6 @@
 .idea
 employee/__pycache__/
+employee/migrations/__pycache__/
 faq/__pycache__/
+faq/migrations/__pycache__/
 tgbot/__pycache__/
