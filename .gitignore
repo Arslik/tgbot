@@ -4,3 +4,7 @@ employee/migrations/__pycache__/
 faq/__pycache__/
 faq/migrations/__pycache__/
 tgbot/__pycache__/
+tg-bot/__pycache__/
+tg-bot/utils/__pycache__/
+tg-bot/handlers/login/__pycache__/
+tg-bot/handlers/registration/__pycache__/
