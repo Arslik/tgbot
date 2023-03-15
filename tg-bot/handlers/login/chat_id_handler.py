@@ -1,6 +1,7 @@
-import sqlite3
 import telegram
 from main import *
+from utils.api import *
+from utils.wrappers import *
 import requests
 import json
 from telegram import ReplyKeyboardMarkup, Update, CallbackQuery, Contact, \
@@ -9,10 +10,10 @@ from telegram.ext import CallbackContext, ApplicationBuilder, ContextTypes, Comm
     filters, InlineQueryHandler, CallbackQueryHandler, Updater
 
 
+@wait_message
 async def handle_chat_id(update: Update, context: CallbackContext):
     chat_id = update.message.chat_id
-    url = f'http://127.0.0.1:8000/employee/?type=chat_id&value={chat_id}'
-
+    url = (url_for_chat_id+str(chat_id))
     response = requests.get(url)
     database_chat_id = response.json()['chat_id']
 
@@ -34,3 +35,4 @@ async def handle_chat_id(update: Update, context: CallbackContext):
         await context.bot.send_message(chat_id=chat_id, text="Share Contact", reply_markup=reply_markup)
 
 
+start_handler = CommandHandler('start', handle_chat_id)

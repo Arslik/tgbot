@@ -1,7 +1,8 @@
-import sqlite3
 import telegram
 from main import *
 import requests
+from utils.api import *
+from utils.wrappers import *
 import json
 from telegram import ReplyKeyboardMarkup, Update, CallbackQuery, Contact, \
     Update, InlineQueryResultArticle, InputTextMessageContent, KeyboardButton, InlineKeyboardMarkup
@@ -9,6 +10,7 @@ from telegram.ext import CallbackContext, ApplicationBuilder, ContextTypes, Comm
     filters, InlineQueryHandler, CallbackQueryHandler, Updater
 
 
+@wait_message
 async def handle_button_press(update, context):
     contact = update.message.contact.phone_number
     if contact is not None:
@@ -32,14 +34,12 @@ async def handle_button_press(update, context):
 
 
 async def check_phone_number(chat_id: int, phone_number: str):
-
-    url = f'http://127.0.0.1:8000/employee/?type=phone&value={phone_number}'
+    url = (url_for_phones+phone_number)
     response = requests.get(url)
     database_phone_number = response.json()['phone_number']
 
     if database_phone_number == phone_number:
-
-        url = f'http://127.0.0.1:8000/employee/?type=phone&value={phone_number}'
+        url = (url_for_phones + phone_number)
         patch_data = {"chat_id": f"{chat_id}"}
 
         response = requests.patch(url, json=patch_data)
@@ -50,4 +50,5 @@ async def check_phone_number(chat_id: int, phone_number: str):
     else:
         return False
 
+phone_number_handler = MessageHandler(filters.CONTACT, handle_button_press)
 
